@@ -17,6 +17,7 @@ export default function Allocations() {
   const [selectedItem, setSelectedItem] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [returnDate, setReturnDate] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -58,7 +59,7 @@ export default function Allocations() {
       employeeId: Number(selectedEmployee),
       quantity: Number(quantity),
       issueDate: new Date().toISOString(),
-      returnDate: null,
+      returnDate: returnDate ? new Date(returnDate).toISOString() : null,
       status: "ALLOCATED"
     };
 
@@ -116,6 +117,13 @@ export default function Allocations() {
             value={quantity}
             onChange={(e) => setQuantity(parseInt(e.target.value))}
             placeholder="Quantity"
+          />
+
+          <Input
+            type="date"
+            value={returnDate}
+            onChange={(e) => setReturnDate(e.target.value)}
+            placeholder="Return Date"
           />
 
           <Button onClick={handleAllocate}>
