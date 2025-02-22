@@ -18,14 +18,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Switch>
-          <Route path="/login" component={AuthPage} />
-          <Route path="/" component={() => <ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/items" component={() => <ProtectedRoute><Items /></ProtectedRoute>} />
-          <Route path="/employees" component={() => <ProtectedRoute><Employees /></ProtectedRoute>} />
-          <Route path="/reports" component={() => <ProtectedRoute><Reports /></ProtectedRoute>} />
-          <Route path="/maintenance" component={() => <ProtectedRoute><Maintenance /></ProtectedRoute>} />
-          <Route path="/allocations" component={() => <ProtectedRoute><Allocations /></ProtectedRoute>} />
-          <Route component={NotFound} />
+          <Route path="/login">{() => <AuthPage />}</Route>
+          <Route path="/">{() => <ProtectedRoute><Dashboard /></ProtectedRoute>}</Route>
+          <Route path="/items">{() => <ProtectedRoute><Items /></ProtectedRoute>}</Route>
+          <Route path="/employees">{() => <ProtectedRoute><Employees /></ProtectedRoute>}</Route>
+          <Route path="/reports">{() => <ProtectedRoute><Reports /></ProtectedRoute>}</Route>
+          <Route path="/maintenance">{() => <ProtectedRoute><Maintenance /></ProtectedRoute>}</Route>
+          <Route path="/allocations">{() => <ProtectedRoute><Allocations /></ProtectedRoute>}</Route>
+          <Route>{() => <NotFound />}</Route>
         </Switch>
         <Toaster />
       </AuthProvider>
