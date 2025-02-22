@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { LayoutDashboard, Package, Users, FileBarChart, Tool } from "lucide-react";
+import { LayoutDashboard, Package, Users, FileBarChart, Wrench } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           <Link href="/maintenance">
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
-              <Tool size={20} />
+              <Wrench size={20} />
               Maintenance
             </a>
           </Link>
