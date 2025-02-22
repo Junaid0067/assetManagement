@@ -104,14 +104,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
-    const [employee] = await db.insert(employees).values(insertEmployee).returning();
-    return employee;
+    // Ensure date is properly formatted for database
+    const employee = {
+      ...insertEmployee,
+      joinDate: new Date(insertEmployee.joinDate)
+    };
+    const [result] = await db.insert(employees).values(employee).returning();
+    return result;
   }
 
   async updateEmployee(id: number, updateData: Partial<InsertEmployee>): Promise<Employee> {
+    const employeeData = { ...updateData };
+    if (updateData.joinDate) {
+      employeeData.joinDate = new Date(updateData.joinDate);
+    }
     const [employee] = await db
       .update(employees)
-      .set(updateData)
+      .set(employeeData)
       .where(eq(employees.id, id))
       .returning();
     if (!employee) throw new Error("Employee not found");

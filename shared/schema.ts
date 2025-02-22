@@ -44,7 +44,11 @@ export const insertEmployeeSchema = createInsertSchema(employees).extend({
   name: z.string().min(1, "Name is required"),
   department: z.string().min(1, "Department is required"),
   status: z.string().min(1, "Status is required"),
-  joinDate: z.string().transform((str) => new Date(str).toISOString()),
+  joinDate: z.string()
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: "Invalid date format"
+    })
+    .transform((date) => new Date(date).toISOString())
 });
 
 // Allocations table
