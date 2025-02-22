@@ -1,5 +1,9 @@
-import { users, items, employees, allocations } from "@shared/schema";
-import type { User, InsertUser, Item, InsertItem, Employee, InsertEmployee, Allocation, InsertAllocation } from "@shared/schema";
+import { users, items, employees, allocations, maintenanceRecords, itemRequests, reports } from "@shared/schema";
+import type { 
+  User, InsertUser, Item, InsertItem, Employee, InsertEmployee, 
+  Allocation, InsertAllocation, MaintenanceRecord, InsertMaintenanceRecord,
+  ItemRequest, InsertItemRequest, Report, InsertReport, Role
+} from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
@@ -33,6 +37,23 @@ export interface IStorage {
   getAllocation(id: number): Promise<Allocation | undefined>;
   createAllocation(allocation: InsertAllocation): Promise<Allocation>;
   updateAllocation(id: number, allocation: Partial<InsertAllocation>): Promise<Allocation>;
+
+  // Maintenance operations
+  getMaintenanceRecords(): Promise<MaintenanceRecord[]>;
+  getMaintenanceRecord(id: number): Promise<MaintenanceRecord | undefined>;
+  createMaintenanceRecord(record: InsertMaintenanceRecord): Promise<MaintenanceRecord>;
+  updateMaintenanceRecord(id: number, record: Partial<InsertMaintenanceRecord>): Promise<MaintenanceRecord>;
+
+  // Item Request operations
+  getItemRequests(): Promise<ItemRequest[]>;
+  getItemRequest(id: number): Promise<ItemRequest | undefined>;
+  createItemRequest(request: InsertItemRequest): Promise<ItemRequest>;
+  updateItemRequest(id: number, request: Partial<InsertItemRequest>): Promise<ItemRequest>;
+
+  // Report operations
+  getReports(): Promise<Report[]>;
+  getReport(id: number): Promise<Report | undefined>;
+  createReport(report: InsertReport): Promise<Report>;
 
   // Session store
   sessionStore: session.Store;
@@ -104,10 +125,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
-    // Ensure date is properly formatted for database
     const employee = {
       ...insertEmployee,
-      joinDate: new Date(insertEmployee.joinDate)
+      joinDate: new Date(insertEmployee.joinDate).toISOString()
     };
     const [result] = await db.insert(employees).values(employee).returning();
     return result;
@@ -116,7 +136,7 @@ export class DatabaseStorage implements IStorage {
   async updateEmployee(id: number, updateData: Partial<InsertEmployee>): Promise<Employee> {
     const employeeData = { ...updateData };
     if (updateData.joinDate) {
-      employeeData.joinDate = new Date(updateData.joinDate);
+      employeeData.joinDate = new Date(updateData.joinDate).toISOString();
     }
     const [employee] = await db
       .update(employees)
@@ -154,6 +174,99 @@ export class DatabaseStorage implements IStorage {
       .returning();
     if (!allocation) throw new Error("Allocation not found");
     return allocation;
+  }
+
+  // Maintenance Record operations
+  async getMaintenanceRecords(): Promise<MaintenanceRecord[]> {
+    return await db.select().from(maintenanceRecords);
+  }
+
+  async getMaintenanceRecord(id: number): Promise<MaintenanceRecord | undefined> {
+    const [record] = await db.select().from(maintenanceRecords).where(eq(maintenanceRecords.id, id));
+    return record;
+  }
+
+  async createMaintenanceRecord(record: InsertMaintenanceRecord): Promise<MaintenanceRecord> {
+    const recordData = {
+      ...record,
+      maintenanceDate: new Date(record.maintenanceDate).toISOString(),
+      nextMaintenanceDate: record.nextMaintenanceDate 
+        ? new Date(record.nextMaintenanceDate).toISOString() 
+        : null
+    };
+    const [result] = await db.insert(maintenanceRecords).values(recordData).returning();
+    return result;
+  }
+
+  async updateMaintenanceRecord(id: number, updateData: Partial<InsertMaintenanceRecord>): Promise<MaintenanceRecord> {
+    const recordData = { ...updateData };
+    if (updateData.maintenanceDate) {
+      recordData.maintenanceDate = new Date(updateData.maintenanceDate).toISOString();
+    }
+    if (updateData.nextMaintenanceDate) {
+      recordData.nextMaintenanceDate = new Date(updateData.nextMaintenanceDate).toISOString();
+    }
+    const [record] = await db
+      .update(maintenanceRecords)
+      .set(recordData)
+      .where(eq(maintenanceRecords.id, id))
+      .returning();
+    if (!record) throw new Error("Maintenance record not found");
+    return record;
+  }
+
+  // Item Request operations
+  async getItemRequests(): Promise<ItemRequest[]> {
+    return await db.select().from(itemRequests);
+  }
+
+  async getItemRequest(id: number): Promise<ItemRequest | undefined> {
+    const [request] = await db.select().from(itemRequests).where(eq(itemRequests.id, id));
+    return request;
+  }
+
+  async createItemRequest(request: InsertItemRequest): Promise<ItemRequest> {
+    const requestData = {
+      ...request,
+      requestDate: new Date(request.requestDate).toISOString()
+    };
+    const [result] = await db.insert(itemRequests).values(requestData).returning();
+    return result;
+  }
+
+  async updateItemRequest(id: number, updateData: Partial<InsertItemRequest> & { approvalDate?: string }): Promise<ItemRequest> {
+    const requestData = { ...updateData };
+    if (updateData.requestDate) {
+      requestData.requestDate = new Date(updateData.requestDate).toISOString();
+    }
+    if (updateData.approvalDate) {
+      requestData.approvalDate = new Date(updateData.approvalDate).toISOString();
+    }
+    const [request] = await db
+      .update(itemRequests)
+      .set(requestData)
+      .where(eq(itemRequests.id, id))
+      .returning();
+    if (!request) throw new Error("Item request not found");
+    return request;
+  }
+
+  // Report operations
+  async getReports(): Promise<Report[]> {
+    return await db.select().from(reports);
+  }
+
+  async getReport(id: number): Promise<Report | undefined> {
+    const [report] = await db.select().from(reports).where(eq(reports.id, id));
+    return report;
+  }
+
+  async createReport(report: InsertReport): Promise<Report> {
+    const [result] = await db.insert(reports).values({
+      ...report,
+      generatedAt: new Date().toISOString()
+    }).returning();
+    return result;
   }
 }
 
