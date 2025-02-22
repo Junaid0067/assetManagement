@@ -56,9 +56,10 @@ export default function Allocations() {
     createAllocation.mutate({
       itemId: parseInt(selectedItem),
       employeeId: parseInt(selectedEmployee),
-      quantity,
+      quantity: quantity,
       issueDate: new Date().toISOString(),
-      status: "ALLOCATED"
+      returnDate: null,
+      status: "ACTIVE"
     });
   };
 
