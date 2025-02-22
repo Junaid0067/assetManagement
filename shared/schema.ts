@@ -1,4 +1,13 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, date } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+  date,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -34,9 +43,9 @@ export const items = pgTable("items", {
   status: text("status").default("ACTIVE"),
 });
 
-export const insertItemSchema = createInsertSchema(items).omit({ 
+export const insertItemSchema = createInsertSchema(items).omit({
   id: true,
-  qrCode: true 
+  qrCode: true,
 });
 
 // Employees table (existing)
@@ -54,11 +63,12 @@ export const insertEmployeeSchema = createInsertSchema(employees).extend({
   name: z.string().min(1, "Name is required"),
   department: z.string().min(1, "Department is required"),
   status: z.string().min(1, "Status is required"),
-  joinDate: z.string()
+  joinDate: z
+    .string()
     .refine((date) => !isNaN(Date.parse(date)), {
-      message: "Invalid date format"
+      message: "Invalid date format",
     })
-    .transform((date) => new Date(date).toISOString())
+    .transform((date) => new Date(date).toISOString()),
 });
 
 // Allocations table with enhanced tracking
@@ -70,12 +80,12 @@ export const allocations = pgTable("allocations", {
   issueDate: timestamp("issue_date").notNull(),
   returnDate: timestamp("return_date"),
   status: text("status").notNull(),
-  qrScanData: jsonb("qr_scan_data"),
+  // qrScanData: jsonb("qr_scan_data"),
 });
 
-export const insertAllocationSchema = createInsertSchema(allocations).omit({ 
+export const insertAllocationSchema = createInsertSchema(allocations).omit({
   id: true,
-  qrScanData: true
+  // qrScanData: true
 });
 
 // New tables for additional features
@@ -93,8 +103,10 @@ export const maintenanceRecords = pgTable("maintenance_records", {
   status: text("status").notNull(), // PENDING, IN_PROGRESS, COMPLETED
 });
 
-export const insertMaintenanceSchema = createInsertSchema(maintenanceRecords).omit({
-  id: true
+export const insertMaintenanceSchema = createInsertSchema(
+  maintenanceRecords,
+).omit({
+  id: true,
 });
 
 // Item Requests
@@ -112,7 +124,7 @@ export const itemRequests = pgTable("item_requests", {
 
 export const insertItemRequestSchema = createInsertSchema(itemRequests).omit({
   id: true,
-  approvalDate: true
+  approvalDate: true,
 });
 
 // Reports
@@ -127,7 +139,7 @@ export const reports = pgTable("reports", {
 
 export const insertReportSchema = createInsertSchema(reports).omit({
   id: true,
-  generatedAt: true
+  generatedAt: true,
 });
 
 // Types
