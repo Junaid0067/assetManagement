@@ -53,14 +53,16 @@ export default function Allocations() {
       return;
     }
 
-    createAllocation.mutate({
+    const allocation = {
       itemId: Number(selectedItem),
       employeeId: Number(selectedEmployee),
       quantity: Number(quantity),
       issueDate: new Date().toISOString(),
       returnDate: null,
-      status: "ALLOCATED"
-    });
+      status: "ACTIVE"
+    };
+
+    createAllocation.mutate(allocation);
   };
 
   return (
