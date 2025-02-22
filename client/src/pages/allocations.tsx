@@ -10,8 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input"; 
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function Allocations() {
   const [selectedItem, setSelectedItem] = useState("");
@@ -32,7 +40,10 @@ export default function Allocations() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Failed to allocate item");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to allocate item");
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -42,9 +53,10 @@ export default function Allocations() {
       setSelectedItem("");
       setSelectedEmployee("");
       setQuantity(1);
+      setReturnDate("");
     },
-    onError: () => {
-      toast({ title: "Failed to allocate item", variant: "destructive" });
+    onError: (error: Error) => {
+      toast({ title: error.message, variant: "destructive" });
     },
   });
 
@@ -65,18 +77,22 @@ export default function Allocations() {
 
     try {
       await createAllocation.mutateAsync(allocation);
-      toast({ title: "Item allocated successfully" });
-      setSelectedItem("");
-      setSelectedEmployee("");
-      setQuantity(1);
     } catch (error) {
       console.error('Allocation error:', error);
-      toast({ 
-        title: "Failed to allocate item",
-        description: "Please check item availability and try again",
-        variant: "destructive" 
-      });
     }
+  };
+
+  const getAllocationDetails = () => {
+    return allocations.map((allocation: any) => {
+      const item = items.find((i: any) => i.id === allocation.itemId);
+      const employee = employees.find((e: any) => e.id === allocation.employeeId);
+      return {
+        ...allocation,
+        itemName: item?.name,
+        employeeName: employee?.name,
+        department: employee?.department
+      };
+    });
   };
 
   return (
@@ -129,6 +145,40 @@ export default function Allocations() {
           <Button onClick={handleAllocate}>
             Allocate Item
           </Button>
+        </div>
+
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Current Allocations</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead>Employee</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Issue Date</TableHead>
+                <TableHead>Return Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {getAllocationDetails().map((allocation: any) => (
+                <TableRow key={allocation.id}>
+                  <TableCell>{allocation.itemName}</TableCell>
+                  <TableCell>{allocation.employeeName}</TableCell>
+                  <TableCell>{allocation.department}</TableCell>
+                  <TableCell>{allocation.quantity}</TableCell>
+                  <TableCell>{new Date(allocation.issueDate).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {allocation.returnDate 
+                      ? new Date(allocation.returnDate).toLocaleDateString()
+                      : '-'}
+                  </TableCell>
+                  <TableCell>{allocation.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </Layout>

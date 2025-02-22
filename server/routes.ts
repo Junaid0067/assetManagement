@@ -76,6 +76,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const parsed = insertAllocationSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json(parsed.error);
+    
+    const item = await storage.getItem(parsed.data.itemId);
+    if (!item) return res.status(404).json({ error: "Item not found" });
+    
+    if (item.quantity < parsed.data.quantity) {
+      return res.status(400).json({ error: "Insufficient stock" });
+    }
+
+    // Update item quantity
+    await storage.updateItem(item.id, {
+      quantity: item.quantity - parsed.data.quantity
+    });
+
     const allocation = await storage.createAllocation(parsed.data);
     res.status(201).json(allocation);
   });
