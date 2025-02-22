@@ -2,17 +2,19 @@ import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Users table
+// Users table with roles
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default("USER"),
   isAdmin: boolean("is_admin").default(false).notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).extend({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["ADMIN", "MANAGER", "USER"]).default("USER"),
 });
 
 // Items table
@@ -78,3 +80,14 @@ export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
 
 export type Allocation = typeof allocations.$inferSelect;
 export type InsertAllocation = z.infer<typeof insertAllocationSchema>;
+
+export type Role = "ADMIN" | "MANAGER" | "USER";
+
+// Permission utilities
+export const Permissions = {
+  canManageUsers: (role: Role) => role === "ADMIN",
+  canManageItems: (role: Role) => ["ADMIN", "MANAGER"].includes(role),
+  canManageEmployees: (role: Role) => ["ADMIN", "MANAGER"].includes(role),
+  canViewReports: (role: Role) => ["ADMIN", "MANAGER"].includes(role),
+  canCreateReports: (role: Role) => role === "ADMIN",
+};
