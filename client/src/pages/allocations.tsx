@@ -59,10 +59,23 @@ export default function Allocations() {
       quantity: Number(quantity),
       issueDate: new Date().toISOString(),
       returnDate: null,
-      status: "ACTIVE"
+      status: "ALLOCATED"
     };
 
-    createAllocation.mutate(allocation);
+    try {
+      await createAllocation.mutateAsync(allocation);
+      toast({ title: "Item allocated successfully" });
+      setSelectedItem("");
+      setSelectedEmployee("");
+      setQuantity(1);
+    } catch (error) {
+      console.error('Allocation error:', error);
+      toast({ 
+        title: "Failed to allocate item",
+        description: "Please check item availability and try again",
+        variant: "destructive" 
+      });
+    }
   };
 
   return (
