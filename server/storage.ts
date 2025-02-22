@@ -1,8 +1,12 @@
-import { User, InsertUser, Item, InsertItem, Employee, InsertEmployee, Allocation, InsertAllocation } from "@shared/schema";
+import { users, items, employees, allocations } from "@shared/schema";
+import type { User, InsertUser, Item, InsertItem, Employee, InsertEmployee, Allocation, InsertAllocation } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import session from "express-session";
-import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User operations
@@ -31,130 +35,117 @@ export interface IStorage {
   updateAllocation(id: number, allocation: Partial<InsertAllocation>): Promise<Allocation>;
 
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private items: Map<number, Item>;
-  private employees: Map<number, Employee>;
-  private allocations: Map<number, Allocation>;
-  public sessionStore: session.SessionStore;
-  private currentIds: { [key: string]: number };
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.items = new Map();
-    this.employees = new Map();
-    this.allocations = new Map();
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000,
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
     });
-    this.currentIds = {
-      users: 1,
-      items: 1,
-      employees: 1,
-      allocations: 1,
-    };
   }
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentIds.users++;
-    const user: User = { ...insertUser, id, isAdmin: false };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   // Item operations
   async getItems(): Promise<Item[]> {
-    return Array.from(this.items.values());
+    return await db.select().from(items);
   }
 
   async getItem(id: number): Promise<Item | undefined> {
-    return this.items.get(id);
+    const [item] = await db.select().from(items).where(eq(items.id, id));
+    return item;
   }
 
   async createItem(insertItem: InsertItem): Promise<Item> {
-    const id = this.currentIds.items++;
-    const item: Item = { ...insertItem, id };
-    this.items.set(id, item);
+    const [item] = await db.insert(items).values(insertItem).returning();
     return item;
   }
 
   async updateItem(id: number, updateData: Partial<InsertItem>): Promise<Item> {
-    const item = this.items.get(id);
+    const [item] = await db
+      .update(items)
+      .set(updateData)
+      .where(eq(items.id, id))
+      .returning();
     if (!item) throw new Error("Item not found");
-    const updatedItem = { ...item, ...updateData };
-    this.items.set(id, updatedItem);
-    return updatedItem;
+    return item;
   }
 
   async deleteItem(id: number): Promise<void> {
-    this.items.delete(id);
+    await db.delete(items).where(eq(items.id, id));
   }
 
   // Employee operations
   async getEmployees(): Promise<Employee[]> {
-    return Array.from(this.employees.values());
+    return await db.select().from(employees);
   }
 
   async getEmployee(id: number): Promise<Employee | undefined> {
-    return this.employees.get(id);
+    const [employee] = await db.select().from(employees).where(eq(employees.id, id));
+    return employee;
   }
 
   async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
-    const id = this.currentIds.employees++;
-    const employee: Employee = { ...insertEmployee, id };
-    this.employees.set(id, employee);
+    const [employee] = await db.insert(employees).values(insertEmployee).returning();
     return employee;
   }
 
   async updateEmployee(id: number, updateData: Partial<InsertEmployee>): Promise<Employee> {
-    const employee = this.employees.get(id);
+    const [employee] = await db
+      .update(employees)
+      .set(updateData)
+      .where(eq(employees.id, id))
+      .returning();
     if (!employee) throw new Error("Employee not found");
-    const updatedEmployee = { ...employee, ...updateData };
-    this.employees.set(id, updatedEmployee);
-    return updatedEmployee;
+    return employee;
   }
 
   async deleteEmployee(id: number): Promise<void> {
-    this.employees.delete(id);
+    await db.delete(employees).where(eq(employees.id, id));
   }
 
   // Allocation operations
   async getAllocations(): Promise<Allocation[]> {
-    return Array.from(this.allocations.values());
+    return await db.select().from(allocations);
   }
 
   async getAllocation(id: number): Promise<Allocation | undefined> {
-    return this.allocations.get(id);
+    const [allocation] = await db.select().from(allocations).where(eq(allocations.id, id));
+    return allocation;
   }
 
   async createAllocation(insertAllocation: InsertAllocation): Promise<Allocation> {
-    const id = this.currentIds.allocations++;
-    const allocation: Allocation = { ...insertAllocation, id };
-    this.allocations.set(id, allocation);
+    const [allocation] = await db.insert(allocations).values(insertAllocation).returning();
     return allocation;
   }
 
   async updateAllocation(id: number, updateData: Partial<InsertAllocation>): Promise<Allocation> {
-    const allocation = this.allocations.get(id);
+    const [allocation] = await db
+      .update(allocations)
+      .set(updateData)
+      .where(eq(allocations.id, id))
+      .returning();
     if (!allocation) throw new Error("Allocation not found");
-    const updatedAllocation = { ...allocation, ...updateData };
-    this.allocations.set(id, updatedAllocation);
-    return updatedAllocation;
+    return allocation;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
