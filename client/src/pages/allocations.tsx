@@ -47,7 +47,7 @@ export default function Allocations() {
     },
   });
 
-  const handleAllocate = () => {
+  const handleAllocate = async () => {
     if (!selectedItem || !selectedEmployee) {
       toast({ title: "Please select item and employee", variant: "destructive" });
       return;
