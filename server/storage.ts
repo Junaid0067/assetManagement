@@ -161,9 +161,14 @@ export class DatabaseStorage implements IStorage {
     return allocation;
   }
 
-  async createAllocation(insertAllocation: InsertAllocation): Promise<Allocation> {
-    const [allocation] = await db.insert(allocations).values(insertAllocation).returning();
-    return allocation;
+  async createAllocation(allocation: InsertAllocation): Promise<Allocation> {
+    const allocationData = {
+      ...allocation,
+      issueDate: new Date(allocation.issueDate).toISOString(),
+      returnDate: allocation.returnDate ? new Date(allocation.returnDate).toISOString() : null
+    };
+    const [result] = await db.insert(allocations).values(allocationData).returning();
+    return result;
   }
 
   async updateAllocation(id: number, updateData: Partial<InsertAllocation>): Promise<Allocation> {
@@ -187,14 +192,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMaintenanceRecord(record: InsertMaintenanceRecord): Promise<MaintenanceRecord> {
-    const recordData = {
+    const maintenanceData = {
       ...record,
       maintenanceDate: new Date(record.maintenanceDate).toISOString(),
-      nextMaintenanceDate: record.nextMaintenanceDate 
-        ? new Date(record.nextMaintenanceDate).toISOString() 
-        : null
+      nextMaintenanceDate: record.nextMaintenanceDate ? new Date(record.nextMaintenanceDate).toISOString() : null
     };
-    const [result] = await db.insert(maintenanceRecords).values(recordData).returning();
+    const [result] = await db.insert(maintenanceRecords).values(maintenanceData).returning();
     return result;
   }
 
