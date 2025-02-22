@@ -80,10 +80,14 @@ export const allocations = pgTable("allocations", {
   // qrScanData: jsonb("qr_scan_data"),
 });
 
-export const insertAllocationSchema = createInsertSchema(allocations).omit({
-  id: true,
-  // qrScanData: true
-});
+export const insertAllocationSchema = createInsertSchema(allocations)
+  .extend({
+    issueDate: z.string().transform(date => new Date(date)),
+    returnDate: z.string().nullable().transform(date => date ? new Date(date) : null),
+  })
+  .omit({
+    id: true,
+  });
 
 // New tables for additional features
 
