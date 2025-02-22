@@ -11,8 +11,7 @@ import Items from "@/pages/items";
 import Employees from "@/pages/employees";
 import Reports from "@/pages/reports";
 
-// Dummy component for allocations
-const Allocations = () => <div>Allocations Page</div>;
+import Allocations from "@/pages/allocations";
 
 function Router() {
   return (
