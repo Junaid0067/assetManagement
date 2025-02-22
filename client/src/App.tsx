@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
+import ProtectedRoute from "@/lib/protected-route"; //Corrected import path
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import Dashboard from "@/pages/dashboard";
@@ -13,26 +13,20 @@ import Reports from "@/pages/reports";
 import Maintenance from "@/pages/maintenance";
 import Allocations from "@/pages/allocations";
 
-function Router() {
-  return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/" component={Dashboard} />
-      <ProtectedRoute path="/items" component={Items} />
-      <ProtectedRoute path="/employees" component={Employees} />
-      <ProtectedRoute path="/allocations" component={Allocations} />
-      <ProtectedRoute path="/reports" component={Reports} />
-      <ProtectedRoute path="/maintenance" component={Maintenance} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
+        <Switch>
+          <Route path="/login" component={AuthPage} />
+          <Route path="/" component={() => <ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/items" component={() => <ProtectedRoute><Items /></ProtectedRoute>} />
+          <Route path="/employees" component={() => <ProtectedRoute><Employees /></ProtectedRoute>} />
+          <Route path="/reports" component={() => <ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/maintenance" component={() => <ProtectedRoute><Maintenance /></ProtectedRoute>} />
+          <Route path="/allocations" component={() => <ProtectedRoute><Allocations /></ProtectedRoute>} />
+          <Route component={NotFound} />
+        </Switch>
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>
