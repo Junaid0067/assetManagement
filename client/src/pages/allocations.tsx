@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/layout";
@@ -66,12 +67,12 @@ export default function Allocations() {
     }
 
     const allocation = {
-      itemId: parseInt(selectedItem),
-      employeeId: parseInt(selectedEmployee),
-      quantity,
+      itemId: Number(selectedItem),
+      employeeId: Number(selectedEmployee),
+      quantity: Number(quantity),
       issueDate: new Date().toISOString(),
-      returnDate: returnDate || null,
-      status: 'ACTIVE'
+      returnDate: returnDate ? new Date(returnDate).toISOString() : null,
+      status: "ALLOCATED"
     };
 
     try {

@@ -89,7 +89,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {allocations?.filter((a: any) => a.status === 'ACTIVE').length || 0}
+                {allocations?.filter((a: any) => a.status === 'active').length || 0}
               </div>
             </CardContent>
           </Card>
