@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export default function Items() {
   });
 
   // Reset form when selectedItem changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedItem) {
       form.reset(selectedItem);
     } else {

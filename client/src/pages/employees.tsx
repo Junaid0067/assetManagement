@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -33,13 +33,13 @@ export default function Employees() {
       code: "",
       name: "",
       department: "",
-      joinDate: new Date().toISOString(),
+      joinDate: new Date().toISOString().split('T')[0],
       status: "active",
     },
   });
 
   // Reset form when selectedEmployee changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedEmployee) {
       form.reset({
         ...selectedEmployee,
