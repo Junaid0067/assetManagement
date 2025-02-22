@@ -1,47 +1,45 @@
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
+import { LayoutDashboard, Package, Users, FileBarChart, Tool } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import {
-  LayoutDashboard,
-  Package,
-  Users,
-  FileBarChart,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { logoutMutation } = useAuth();
-  const [location] = useLocation();
-
-  const navItems = [
-    { href: "/", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/items", icon: Package, label: "Items" },
-    { href: "/employees", icon: Users, label: "Employees" },
-    { href: "/reports", icon: FileBarChart, label: "Reports" },
-  ];
-
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-sidebar border-r border-sidebar-border">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-sidebar-foreground">Inventory</h1>
-        </div>
-        <nav className="px-4 space-y-2">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <a
-                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                  location === item.href
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                {item.label}
-              </a>
-            </Link>
-          ))}
+    <div className="min-h-screen">
+      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background">
+        <nav className="h-full space-y-2 p-4">
+          <Link href="/dashboard">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <LayoutDashboard size={20} />
+              Dashboard
+            </a>
+          </Link>
+          <Link href="/items">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <Package size={20} />
+              Items
+            </a>
+          </Link>
+          <Link href="/employees">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <Users size={20} />
+              Employees
+            </a>
+          </Link>
+          <Link href="/allocations">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <FileBarChart size={20} />
+              Allocations
+            </a>
+          </Link>
+          <Link href="/maintenance">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <Tool size={20} />
+              Maintenance
+            </a>
+          </Link>
         </nav>
         <div className="absolute bottom-4 left-4 right-4">
           <Button
@@ -54,9 +52,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Button>
         </div>
       </aside>
-
-      {/* Main content */}
-      <main className="flex-1 p-8">{children}</main>
+      <main className="pl-64">
+        <div className="container p-8">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
