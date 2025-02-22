@@ -19,12 +19,48 @@ function App() {
       <AuthProvider>
         <Switch>
           <Route path="/login">{() => <AuthPage />}</Route>
-          <Route path="/">{() => <ProtectedRoute><Dashboard /></ProtectedRoute>}</Route>
-          <Route path="/items">{() => <ProtectedRoute><Items /></ProtectedRoute>}</Route>
-          <Route path="/employees">{() => <ProtectedRoute><Employees /></ProtectedRoute>}</Route>
-          <Route path="/reports">{() => <ProtectedRoute><Reports /></ProtectedRoute>}</Route>
-          <Route path="/maintenance">{() => <ProtectedRoute><Maintenance /></ProtectedRoute>}</Route>
-          <Route path="/allocations">{() => <ProtectedRoute><Allocations /></ProtectedRoute>}</Route>
+          <Route path="/dashboard">
+            {() => (
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/items">
+            {() => (
+              <ProtectedRoute>
+                <Items />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/employees">
+            {() => (
+              <ProtectedRoute>
+                <Employees />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/reports">
+            {() => (
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/maintenance">
+            {() => (
+              <ProtectedRoute>
+                <Maintenance />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/allocations">
+            {() => (
+              <ProtectedRoute>
+                <Allocations />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route>{() => <NotFound />}</Route>
         </Switch>
         <Toaster />
