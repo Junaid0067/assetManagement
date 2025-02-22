@@ -10,7 +10,7 @@ import Dashboard from "@/pages/dashboard";
 import Items from "@/pages/items";
 import Employees from "@/pages/employees";
 import Reports from "@/pages/reports";
-
+import Maintenance from "@/pages/maintenance";
 import Allocations from "@/pages/allocations";
 
 function Router() {
@@ -22,6 +22,7 @@ function Router() {
       <ProtectedRoute path="/employees" component={Employees} />
       <ProtectedRoute path="/allocations" component={Allocations} />
       <ProtectedRoute path="/reports" component={Reports} />
+      <ProtectedRoute path="/maintenance" component={Maintenance} />
       <Route component={NotFound} />
     </Switch>
   );
