@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertEmployeeSchema, type Employee } from "@shared/schema";
+import { insertEmployeeSchema, type Employee, type InsertEmployee } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -23,7 +23,7 @@ export default function Employees() {
     queryKey: ["/api/employees"],
   });
 
-  const form = useForm({
+  const form = useForm<InsertEmployee>({
     resolver: zodResolver(insertEmployeeSchema),
     defaultValues: {
       code: "",
@@ -35,12 +35,9 @@ export default function Employees() {
   });
 
   const createEmployeeMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/employees", {
-        ...data,
-        joinDate: new Date(data.joinDate).toISOString(),
-      });
-      return res.json();
+    mutationFn: async (data: InsertEmployee) => {
+      const res = await apiRequest("POST", "/api/employees", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
@@ -90,7 +87,7 @@ export default function Employees() {
                       <FormItem>
                         <FormLabel>Employee Code</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} placeholder="EMP001" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -104,7 +101,7 @@ export default function Employees() {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} placeholder="John Doe" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
