@@ -3,24 +3,11 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertEmployeeSchema } from "@shared/schema";
+import { insertEmployeeSchema, type Employee } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -30,8 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 export default function Employees() {
   const [search, setSearch] = useState("");
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
   });
 
@@ -48,13 +36,17 @@ export default function Employees() {
 
   const createEmployeeMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/employees", data);
+      const res = await apiRequest("POST", "/api/employees", {
+        ...data,
+        joinDate: new Date(data.joinDate).toISOString(),
+      });
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
       toast({ title: "Employee created successfully" });
       form.reset();
+      setOpen(false);
     },
     onError: (error: Error) => {
       toast({
@@ -65,7 +57,7 @@ export default function Employees() {
     },
   });
 
-  const filteredEmployees = employees.filter((employee: any) =>
+  const filteredEmployees = employees.filter((employee) =>
     employee.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -75,7 +67,7 @@ export default function Employees() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Employees</h1>
 
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -205,7 +197,7 @@ export default function Employees() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEmployees.map((employee: any) => (
+              {filteredEmployees.map((employee) => (
                 <TableRow key={employee.id}>
                   <TableCell>{employee.code}</TableCell>
                   <TableCell>{employee.name}</TableCell>
