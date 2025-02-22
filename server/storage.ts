@@ -127,7 +127,7 @@ export class DatabaseStorage implements IStorage {
   async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
     const employee = {
       ...insertEmployee,
-      joinDate: new Date(insertEmployee.joinDate).toISOString()
+      joinDate: insertEmployee.joinDate
     };
     const [result] = await db.insert(employees).values(employee).returning();
     return result;
