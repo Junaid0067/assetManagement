@@ -11,6 +11,9 @@ import Items from "@/pages/items";
 import Employees from "@/pages/employees";
 import Reports from "@/pages/reports";
 
+// Dummy component for allocations
+const Allocations = () => <div>Allocations Page</div>;
+
 function Router() {
   return (
     <Switch>
@@ -18,6 +21,7 @@ function Router() {
       <ProtectedRoute path="/" component={Dashboard} />
       <ProtectedRoute path="/items" component={Items} />
       <ProtectedRoute path="/employees" component={Employees} />
+      <ProtectedRoute path="/allocations" component={Allocations} />
       <ProtectedRoute path="/reports" component={Reports} />
       <Route component={NotFound} />
     </Switch>
