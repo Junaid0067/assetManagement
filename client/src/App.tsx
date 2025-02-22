@@ -19,7 +19,7 @@ function App() {
       <AuthProvider>
         <Switch>
           <Route path="/login">{() => <AuthPage />}</Route>
-          <Route path="/dashboard">
+          <Route path="/">
             {() => (
               <ProtectedRoute>
                 <Dashboard />

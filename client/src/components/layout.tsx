@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { LayoutDashboard, Package, Users, FileBarChart, Wrench } from "lucide-react";
+import { LayoutDashboard, Package, Users, FileBarChart, Wrench, FileChartColumnIncreasing, FileStack } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -10,11 +10,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background">
         <nav className="h-full space-y-2 p-4">
-          <Link href="/dashboard">
+          <Link href="/">
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
               <LayoutDashboard size={20} />
               Dashboard
             </a>
+          
           </Link>
           <Link href="/items">
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
@@ -38,6 +39,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
               <Wrench size={20} />
               Maintenance
+            </a>
+          </Link>
+          <Link href="/reports">
+            <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
+              <FileStack size={20} />
+              Reports
             </a>
           </Link>
         </nav>
