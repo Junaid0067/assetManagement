@@ -1,8 +1,28 @@
-import { users, items, employees, allocations, maintenanceRecords, itemRequests, reports } from "@shared/schema";
-import type { 
-  User, InsertUser, Item, InsertItem, Employee, InsertEmployee, 
-  Allocation, InsertAllocation, MaintenanceRecord, InsertMaintenanceRecord,
-  ItemRequest, InsertItemRequest, Report, InsertReport, Role
+import {
+  users,
+  items,
+  employees,
+  allocations,
+  maintenanceRecords,
+  itemRequests,
+  reports,
+} from "@shared/schema";
+import type {
+  User,
+  InsertUser,
+  Item,
+  InsertItem,
+  Employee,
+  InsertEmployee,
+  Allocation,
+  InsertAllocation,
+  MaintenanceRecord,
+  InsertMaintenanceRecord,
+  ItemRequest,
+  InsertItemRequest,
+  Report,
+  InsertReport,
+  Role,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -29,26 +49,40 @@ export interface IStorage {
   getEmployees(): Promise<Employee[]>;
   getEmployee(id: number): Promise<Employee | undefined>;
   createEmployee(employee: InsertEmployee): Promise<Employee>;
-  updateEmployee(id: number, employee: Partial<InsertEmployee>): Promise<Employee>;
+  updateEmployee(
+    id: number,
+    employee: Partial<InsertEmployee>,
+  ): Promise<Employee>;
   deleteEmployee(id: number): Promise<void>;
 
   // Allocation operations
   getAllocations(): Promise<Allocation[]>;
   getAllocation(id: number): Promise<Allocation | undefined>;
   createAllocation(allocation: InsertAllocation): Promise<Allocation>;
-  updateAllocation(id: number, allocation: Partial<InsertAllocation>): Promise<Allocation>;
+  updateAllocation(
+    id: number,
+    allocation: Partial<InsertAllocation>,
+  ): Promise<Allocation>;
 
   // Maintenance operations
   getMaintenanceRecords(): Promise<MaintenanceRecord[]>;
   getMaintenanceRecord(id: number): Promise<MaintenanceRecord | undefined>;
-  createMaintenanceRecord(record: InsertMaintenanceRecord): Promise<MaintenanceRecord>;
-  updateMaintenanceRecord(id: number, record: Partial<InsertMaintenanceRecord>): Promise<MaintenanceRecord>;
+  createMaintenanceRecord(
+    record: InsertMaintenanceRecord,
+  ): Promise<MaintenanceRecord>;
+  updateMaintenanceRecord(
+    id: number,
+    record: Partial<InsertMaintenanceRecord>,
+  ): Promise<MaintenanceRecord>;
 
   // Item Request operations
   getItemRequests(): Promise<ItemRequest[]>;
   getItemRequest(id: number): Promise<ItemRequest | undefined>;
   createItemRequest(request: InsertItemRequest): Promise<ItemRequest>;
-  updateItemRequest(id: number, request: Partial<InsertItemRequest>): Promise<ItemRequest>;
+  updateItemRequest(
+    id: number,
+    request: Partial<InsertItemRequest>,
+  ): Promise<ItemRequest>;
 
   // Report operations
   getReports(): Promise<Report[]>;
@@ -76,7 +110,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
     return user;
   }
 
@@ -120,20 +157,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getEmployee(id: number): Promise<Employee | undefined> {
-    const [employee] = await db.select().from(employees).where(eq(employees.id, id));
+    const [employee] = await db
+      .select()
+      .from(employees)
+      .where(eq(employees.id, id));
     return employee;
   }
 
   async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
     const employee = {
       ...insertEmployee,
-      joinDate: new Date(insertEmployee.joinDate)
+      joinDate: new Date(insertEmployee.joinDate),
     };
     const [result] = await db.insert(employees).values(employee).returning();
     return result;
   }
 
-  async updateEmployee(id: number, updateData: Partial<InsertEmployee>): Promise<Employee> {
+  async updateEmployee(
+    id: number,
+    updateData: Partial<InsertEmployee>,
+  ): Promise<Employee> {
     const employeeData = { ...updateData };
     if (updateData.joinDate) {
       employeeData.joinDate = new Date(updateData.joinDate).toISOString();
@@ -157,21 +200,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllocation(id: number): Promise<Allocation | undefined> {
-    const [allocation] = await db.select().from(allocations).where(eq(allocations.id, id));
+    const [allocation] = await db
+      .select()
+      .from(allocations)
+      .where(eq(allocations.id, id));
     return allocation;
   }
 
   async createAllocation(allocation: InsertAllocation): Promise<Allocation> {
     const allocationData = {
       ...allocation,
-      issueDate: new Date(allocation.issueDate).toISOString(),
-      returnDate: allocation.returnDate ? new Date(allocation.returnDate).toISOString() : null
+      issueDate: new Date(allocation.issueDate),
+      returnDate: allocation.returnDate
+        ? new Date(allocation.returnDate)
+        : null,
     };
-    const [result] = await db.insert(allocations).values(allocationData).returning();
+    const [result] = await db
+      .insert(allocations)
+      .values(allocationData)
+      .returning();
     return result;
   }
 
-  async updateAllocation(id: number, updateData: Partial<InsertAllocation>): Promise<Allocation> {
+  async updateAllocation(
+    id: number,
+    updateData: Partial<InsertAllocation>,
+  ): Promise<Allocation> {
     const [allocation] = await db
       .update(allocations)
       .set(updateData)
@@ -186,28 +240,43 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(maintenanceRecords);
   }
 
-  async getMaintenanceRecord(id: number): Promise<MaintenanceRecord | undefined> {
-    const [record] = await db.select().from(maintenanceRecords).where(eq(maintenanceRecords.id, id));
+  async getMaintenanceRecord(
+    id: number,
+  ): Promise<MaintenanceRecord | undefined> {
+    const [record] = await db
+      .select()
+      .from(maintenanceRecords)
+      .where(eq(maintenanceRecords.id, id));
     return record;
   }
 
-  async createMaintenanceRecord(record: InsertMaintenanceRecord): Promise<MaintenanceRecord> {
+  async createMaintenanceRecord(
+    record: InsertMaintenanceRecord,
+  ): Promise<MaintenanceRecord> {
     const maintenanceData = {
       ...record,
-      maintenanceDate: new Date(record.maintenanceDate).toISOString(),
-      nextMaintenanceDate: record.nextMaintenanceDate ? new Date(record.nextMaintenanceDate).toISOString() : null
+      maintenanceDate: new Date(record.maintenanceDate),
+      nextMaintenanceDate: record.nextMaintenanceDate
+        ? new Date(record.nextMaintenanceDate)
+        : null,
     };
-    const [result] = await db.insert(maintenanceRecords).values(maintenanceData).returning();
+    const [result] = await db
+      .insert(maintenanceRecords)
+      .values(maintenanceData)
+      .returning();
     return result;
   }
 
-  async updateMaintenanceRecord(id: number, updateData: Partial<InsertMaintenanceRecord>): Promise<MaintenanceRecord> {
+  async updateMaintenanceRecord(
+    id: number,
+    updateData: Partial<InsertMaintenanceRecord>,
+  ): Promise<MaintenanceRecord> {
     const recordData = { ...updateData };
     if (updateData.maintenanceDate) {
-      recordData.maintenanceDate = new Date(updateData.maintenanceDate).toISOString();
+      recordData.maintenanceDate = new Date(updateData.maintenanceDate);
     }
     if (updateData.nextMaintenanceDate) {
-      recordData.nextMaintenanceDate = new Date(updateData.nextMaintenanceDate).toISOString();
+      recordData.nextMaintenanceDate = new Date(updateData.nextMaintenanceDate);
     }
     const [record] = await db
       .update(maintenanceRecords)
@@ -224,26 +293,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getItemRequest(id: number): Promise<ItemRequest | undefined> {
-    const [request] = await db.select().from(itemRequests).where(eq(itemRequests.id, id));
+    const [request] = await db
+      .select()
+      .from(itemRequests)
+      .where(eq(itemRequests.id, id));
     return request;
   }
 
   async createItemRequest(request: InsertItemRequest): Promise<ItemRequest> {
     const requestData = {
       ...request,
-      requestDate: new Date(request.requestDate).toISOString()
+      requestDate: new Date(request.requestDate),
     };
-    const [result] = await db.insert(itemRequests).values(requestData).returning();
+    const [result] = await db
+      .insert(itemRequests)
+      .values(requestData)
+      .returning();
     return result;
   }
 
-  async updateItemRequest(id: number, updateData: Partial<InsertItemRequest> & { approvalDate?: string }): Promise<ItemRequest> {
+  async updateItemRequest(
+    id: number,
+    updateData: Partial<InsertItemRequest> & { approvalDate?: string },
+  ): Promise<ItemRequest> {
     const requestData = { ...updateData };
     if (updateData.requestDate) {
-      requestData.requestDate = new Date(updateData.requestDate).toISOString();
+      requestData.requestDate = new Date(updateData.requestDate);
     }
     if (updateData.approvalDate) {
-      requestData.approvalDate = new Date(updateData.approvalDate).toISOString();
+      requestData.approvalDate = new Date(updateData.approvalDate);
     }
     const [request] = await db
       .update(itemRequests)
@@ -265,10 +343,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createReport(report: InsertReport): Promise<Report> {
-    const [result] = await db.insert(reports).values({
-      ...report,
-      generatedAt: new Date().toISOString()
-    }).returning();
+    const [result] = await db
+      .insert(reports)
+      .values({
+        ...report,
+        generatedAt: new Date(),
+      })
+      .returning();
     return result;
   }
 }
