@@ -106,7 +106,7 @@ export default function Reports() {
                   <TableRow>
                     <TableHead>Item Name</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead>Total Quantity</TableHead>
+                    {/* <TableHead>Total Quantity</TableHead> */}
                     <TableHead>Allocated</TableHead>
                     <TableHead>Available</TableHead>
                   </TableRow>
@@ -116,9 +116,9 @@ export default function Reports() {
                     <TableRow key={item.id}>
                       <TableCell>{item.name}</TableCell>
                       <TableCell>{item.category}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
+                      {/* <TableCell>{item.quantity}</TableCell> */}
                       <TableCell>{item.allocated}</TableCell>
-                      <TableCell>{item.quantity - item.allocated}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

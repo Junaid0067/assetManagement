@@ -35,12 +35,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               Allocations
             </a>
           </Link>
-          <Link href="/maintenance">
+          {/* <Link href="/maintenance">
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
               <Wrench size={20} />
               Maintenance
             </a>
-          </Link>
+          </Link> */}
           <Link href="/reports">
             <a className="flex items-center gap-2 rounded p-2 hover:bg-accent">
               <FileStack size={20} />

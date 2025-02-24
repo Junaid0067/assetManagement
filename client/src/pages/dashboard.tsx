@@ -10,8 +10,8 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -19,35 +19,36 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export default function Dashboard() {
-  const { data: items } = useQuery({ 
-    queryKey: ["/api/items"]
+  const { data: items } = useQuery({
+    queryKey: ["/api/items"],
   });
 
-  const { data: employees } = useQuery({ 
-    queryKey: ["/api/employees"]
+  const { data: employees } = useQuery({
+    queryKey: ["/api/employees"],
   });
 
-  const { data: allocations } = useQuery({ 
-    queryKey: ["/api/allocations"]
+  const { data: allocations } = useQuery({
+    queryKey: ["/api/allocations"],
   });
 
   const chartData = {
-    labels: ['Uniforms', 'Consumables', 'Equipment'],
+    labels: ["Uniforms", "Consumables", "Equipment"],
     datasets: [
       {
-        label: 'Items by Category',
-        data: items?.reduce((acc: any, item: any) => {
-          acc[item.category] = (acc[item.category] || 0) + 1;
-          return acc;
-        }, {}) || [],
+        label: "Items by Category",
+        data:
+          items?.reduce((acc: any, item: any) => {
+            acc[item.category] = (acc[item.category] || 0) + 1;
+            return acc;
+          }, {}) || [],
         backgroundColor: [
-          'hsl(var(--chart-1))',
-          'hsl(var(--chart-2))',
-          'hsl(var(--chart-3))'
+          "hsl(var(--chart-1))",
+          "hsl(var(--chart-2))",
+          "hsl(var(--chart-3))",
         ],
       },
     ],
@@ -72,24 +73,30 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Employees</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Active Employees
+              </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {employees?.filter((e: any) => e.status === 'active').length || 0}
+                {employees?.filter((e: any) => e.status === "active").length ||
+                  0}
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Allocations</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Active Allocations
+              </CardTitle>
               <FileBarChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {allocations?.filter((a: any) => a.status === 'active').length || 0}
+                {allocations?.filter((a: any) => a.status === "ALLOCATED")
+                  .length || 0}
               </div>
             </CardContent>
           </Card>

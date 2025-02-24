@@ -135,12 +135,12 @@ export default function Allocations() {
             placeholder="Quantity"
           />
 
-          <Input
+          {/* <Input
             type="date"
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
             placeholder="Return Date"
-          />
+          /> */}
 
           <Button onClick={handleAllocate}>
             Allocate Item
@@ -157,7 +157,7 @@ export default function Allocations() {
                 <TableHead>Department</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Issue Date</TableHead>
-                <TableHead>Return Date</TableHead>
+                {/* <TableHead>Return Date</TableHead> */}
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -169,11 +169,11 @@ export default function Allocations() {
                   <TableCell>{allocation.department}</TableCell>
                   <TableCell>{allocation.quantity}</TableCell>
                   <TableCell>{new Date(allocation.issueDate).toLocaleDateString()}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {allocation.returnDate 
                       ? new Date(allocation.returnDate).toLocaleDateString()
                       : '-'}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>{allocation.status}</TableCell>
                 </TableRow>
               ))}
